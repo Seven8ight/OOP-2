@@ -4,6 +4,7 @@ import com.test.oop2.model.Role;
 import com.test.oop2.model.User;
 import com.test.oop2.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -29,14 +30,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody User user) {
         Optional<User> foundUser = userRepository.findByEmail(user.getEmail());
-        if (foundUser.isEmpty())
-            return "User not found.";
 
-        if (!foundUser.get().getPassword().equals(user.getPassword()))
-            return "Incorrect password.";
+        if (foundUser.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found.");
+        }
 
-        return "Login successful.";
+        User dbUser = foundUser.get();
+
+        if (!dbUser.getPassword().equals(user.getPassword())) {
+            return ResponseEntity.status(401).body("Incorrect password.");
+        }
+
+        // Hide sensitive info
+        dbUser.setPassword(null); // Don't expose the password in the response
+
+        return ResponseEntity.ok(dbUser); // ✅ Full user object including role
     }
+
 }
