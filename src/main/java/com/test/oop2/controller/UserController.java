@@ -1,5 +1,6 @@
 package com.test.oop2.controller;
 
+import com.test.oop2.model.Role;
 import com.test.oop2.model.User;
 import com.test.oop2.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,13 @@ public class UserController {
     private UserRepo userRepository;
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent())
+    public String registerUser(@RequestBody User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return "Email already registered.";
-        if (userRepository.findByUsername(user.getUsername()).isPresent())
-            return "Username already taken.";
+        }
 
+        // Default role can be CUSTOMER
+        user.setRole(Role.CUSTOMER);
         userRepository.save(user);
         return "User registered successfully.";
     }

@@ -23,6 +23,10 @@ public class User {
     @Column(nullable = false)
     private double balance = 0.0;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+
     public User() {}
 
     public User(String username, String email, String password) {
@@ -51,4 +55,13 @@ public class User {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
 }
