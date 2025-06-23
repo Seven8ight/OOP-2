@@ -18,15 +18,15 @@ public class UserController {
     private UserRepo userRepository;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return "Email already registered.";
+            return ResponseEntity.status(404).body("Email already exists");
         }
 
         // Default role can be CUSTOMER
         user.setRole(Role.CUSTOMER);
         userRepository.save(user);
-        return "User registered successfully.";
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/login")
