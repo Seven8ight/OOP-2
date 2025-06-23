@@ -82,4 +82,9 @@ public class PaymentController {
     ) {
         return paymentRepository.findByUserIdAndBranch(userId, branch);
     }
+
+    @GetMapping("/history/branch/{branch}")
+    public List<Payment> getPaymentsByBranch(@PathVariable String branch) {
+        return paymentRepository.findByBranch(branch);
+    }
 }

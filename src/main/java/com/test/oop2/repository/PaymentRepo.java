@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface PaymentRepo extends JpaRepository<Payment, UUID> {
     List<Payment> findByUserId(UUID userId);
     List<Payment> findByUserIdAndBranch(UUID userId, String branch);
+    List<Payment> findByBranch(String branch);
 }
