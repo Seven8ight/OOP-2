@@ -23,12 +23,13 @@ public class UserController {
             return ResponseEntity.status(404).body("Email already exists");
         }
 
+        // ✅ Explicitly assign a new UUID to the user
+        user.setId(UUID.randomUUID());
         user.setRole(Role.CUSTOMER);
 
-        // ✅ Save and get the persisted user with ID generated
         User savedUser = userRepository.save(user);
 
-        // ✅ Clear sensitive data before returning
+        // ✅ Sanitize before returning
         savedUser.setPassword(null);
 
         return ResponseEntity.ok(savedUser);
