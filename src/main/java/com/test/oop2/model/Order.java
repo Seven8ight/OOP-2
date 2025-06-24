@@ -1,5 +1,6 @@
 package com.test.oop2.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,8 @@ public class Order {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem> items = new ArrayList<>();
+    @JsonManagedReference // prevents infinite loop during JSON serialization
+    private List<OrderItem> items;
 
     public Order() {
         this.createdAt = LocalDateTime.now();

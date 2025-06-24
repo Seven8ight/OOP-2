@@ -1,5 +1,6 @@
 package com.test.oop2.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -18,6 +19,7 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "order_id")
+    @JsonBackReference // skips this during serialization
     private Order order;
 
     public OrderItem() {}
