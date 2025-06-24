@@ -23,11 +23,17 @@ public class UserController {
             return ResponseEntity.status(404).body("Email already exists");
         }
 
-        // Default role can be CUSTOMER
         user.setRole(Role.CUSTOMER);
-        userRepository.save(user);
-        return ResponseEntity.ok(user);
+
+        // ✅ Save and get the persisted user with ID generated
+        User savedUser = userRepository.save(user);
+
+        // ✅ Clear sensitive data before returning
+        savedUser.setPassword(null);
+
+        return ResponseEntity.ok(savedUser);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
