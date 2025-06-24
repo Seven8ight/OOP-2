@@ -5,6 +5,7 @@ import com.test.oop2.model.*;
 import com.test.oop2.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -23,39 +24,43 @@ public class PaymentController {
     private PaymentRepo paymentRepository;
 
     @PostMapping
-    public String makePayment(@RequestBody PaymentRequest request) {
+    public ResponseEntity<?> makePayment(@RequestBody PaymentRequest request) {
         Optional<User> userOpt = userRepository.findById(request.getUserId());
         Optional<Order> orderOpt = orderRepository.findById(request.getOrderId());
 
-        if (userOpt.isEmpty()) return "User not found.";
-        if (orderOpt.isEmpty()) return "Order not found.";
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found."));
+        }
+
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "Order not found."));
+        }
 
         User user = userOpt.get();
         Order order = orderOpt.get();
 
         if (!order.getUserId().equals(user.getId())) {
-            return "This order does not belong to the user.";
+            return ResponseEntity.status(403).body(Map.of("error", "Order does not belong to the user."));
         }
 
         if (order.getOrderStatus() == OrderStatus.SUCCESSFUL) {
-            return "Order already paid.";
+            return ResponseEntity.status(400).body(Map.of("error", "Order already paid."));
         }
 
         double total = order.getTotalPrice();
 
         if (user.getBalance() < total) {
-            return "Not enough balance to make the payment.";
+            return ResponseEntity.status(400).body(Map.of("error", "Insufficient balance."));
         }
 
-        // Deduct from balance
+        // ✅ Deduct balance and update order
         user.setBalance(user.getBalance() - total);
         userRepository.save(user);
 
-        // Update order status
         order.setOrderStatus(OrderStatus.SUCCESSFUL);
         orderRepository.save(order);
 
-        // Log the payment
+        // ✅ Save payment
         Payment payment = new Payment();
         payment.setUserId(user.getId());
         payment.setOrderId(order.getId());
@@ -65,7 +70,10 @@ public class PaymentController {
 
         paymentRepository.save(payment);
 
-        return "Payment successful. Order marked as PAID.";
+        return ResponseEntity.ok(Map.of(
+                "message", "Payment successful. Order marked as PAID.",
+                "newBalance", user.getBalance()
+        ));
     }
 
     // ✅ Place these extra routes BELOW your makePayment() method
