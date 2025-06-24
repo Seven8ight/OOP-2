@@ -89,4 +89,16 @@ public class OrderController {
     public List<Order> getOrdersByUser(@PathVariable UUID userId) {
         return orderRepository.findByUserId(userId);
     }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<?> deleteOrder(@PathVariable UUID orderId) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Order not found.");
+        }
+
+        orderRepository.deleteById(orderId);
+        return ResponseEntity.ok("Order deleted successfully.");
+    }
+
 }
