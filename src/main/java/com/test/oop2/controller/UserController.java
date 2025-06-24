@@ -19,30 +19,15 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        try {
-            if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-                return ResponseEntity.status(409).body("Email already exists"); // Still recommend 409
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // Print to console
-            return ResponseEntity.status(500).body("Error checking existing email: " + e.getMessage());
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity.status(404).body("Email already exists");
         }
 
-        try {
-            user.setId(UUID.randomUUID());
-            user.setRole(Role.CUSTOMER); // Ensure Role.CUSTOMER is valid and accessible
-
-            User savedUser = userRepository.save(user);
-
-            savedUser.setPassword(null);
-
-            return ResponseEntity.ok(savedUser);
-        } catch (Exception e) {
-            e.printStackTrace(); // Print to console
-            return ResponseEntity.status(500).body("Error saving user: " + e.getMessage());
-        }
+        // Default role can be CUSTOMER
+        user.setRole(Role.CUSTOMER);
+        userRepository.save(user);
+        return ResponseEntity.ok(user);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
