@@ -1,7 +1,7 @@
 package com.test.oop2.controller;
 
 import com.test.oop2.model.Product;
-import com.test.oop2.repository.ProductRepo;
+import com.test.oop2.repository.productRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ProductController {
 
     @Autowired
-    private ProductRepo productRepository;
+    private productRepo productRepository;
 
     // Create
     @PostMapping

@@ -4,12 +4,12 @@ import com.test.oop2.model.Order;
 import com.test.oop2.model.OrderItem;
 import com.test.oop2.model.OrderStatus;
 import com.test.oop2.model.Product;
-import com.test.oop2.repository.OrderRepo;
-import com.test.oop2.repository.ProductRepo;
-import com.test.oop2.dto.OrderRequest;
+import com.test.oop2.repository.orderRepo;
+import com.test.oop2.repository.productRepo;
 import com.test.oop2.dto.OrderProductInput;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -19,58 +19,66 @@ import java.util.*;
 public class OrderController {
 
     @Autowired
-    private OrderRepo orderRepository;
+    private orderRepo orderRepository;
 
     @Autowired
-    private ProductRepo productRepository;
+    private productRepo productRepository;
 
     @PostMapping
-    public String createOrder(@RequestBody OrderRequest orderRequest) {
-        List<OrderItem> orderItems = new ArrayList<>();
-        double total = 0;
+    public ResponseEntity<?> createEmptyOrder(@RequestBody Map<String, UUID> body) {
+        UUID userId = body.get("userId");
 
-        for (OrderProductInput item : orderRequest.getProducts()) {
-            UUID productId = item.getProductId();
-            int quantity = item.getQuantity();
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setOrderStatus(OrderStatus.PENDING);
+        order.setTotalPrice(0.0);
+        order.setItems(new ArrayList<>());
 
-            Optional<Product> productOpt = productRepository.findById(productId);
+        orderRepository.save(order);
+
+        return ResponseEntity.ok(order); // Includes the ID for client
+    }
+
+    @PostMapping("/{orderId}/items")
+    public ResponseEntity<?> addItemsToOrder(@PathVariable UUID orderId, @RequestBody List<OrderProductInput> items) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Order not found.");
+        }
+
+        Order order = orderOpt.get();
+        double total = order.getTotalPrice();
+        List<OrderItem> newItems = new ArrayList<>();
+
+        for (OrderProductInput input : items) {
+            Optional<Product> productOpt = productRepository.findById(input.getProductId());
             if (productOpt.isEmpty()) {
-                return "Product with ID " + productId + " not found.";
+                return ResponseEntity.status(404).body("Product not found: " + input.getProductId());
             }
 
             Product product = productOpt.get();
 
-            if (quantity > product.getQuantity()) {
-                return "Insufficient stock for product: " + product.getName();
+            if (input.getQuantity() > product.getQuantity()) {
+                return ResponseEntity.status(400).body("Insufficient stock for " + product.getName());
             }
 
-            double price = product.getPrice() * quantity;
-            total += price;
-
-            // Deduct product stock
-            product.setQuantity(product.getQuantity() - quantity);
+            double subtotal = product.getPrice() * input.getQuantity();
+            product.setQuantity(product.getQuantity() - input.getQuantity());
             productRepository.save(product);
 
-            OrderItem orderItem = new OrderItem(productId, quantity, price, null);
-            orderItems.add(orderItem);
+            OrderItem orderItem = new OrderItem(product.getId(), input.getQuantity(), subtotal, order);
+            newItems.add(orderItem);
+
+            total += subtotal;
         }
 
-        // Create the order
-        Order order = new Order();
-        order.setUserId(orderRequest.getUserId());
+        order.getItems().addAll(newItems);
         order.setTotalPrice(total);
-        order.setOrderStatus(OrderStatus.PENDING);  // ✅ Set status
-
-
-        for (OrderItem item : orderItems) {
-            item.setOrder(order); // Set the back-reference
-        }
-
-        order.setItems(orderItems);
         orderRepository.save(order);
 
-        return "Order placed successfully.";
+        return ResponseEntity.ok(order);
     }
+
 
     @GetMapping
     public List<Order> getAllOrders() {

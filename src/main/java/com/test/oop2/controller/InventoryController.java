@@ -17,7 +17,7 @@ public class InventoryController {
     private BranchRepo branchRepository;
 
     @Autowired
-    private ProductRepo productRepository;
+    private productRepo productRepository;
 
     @Autowired
     private BranchInventoryRepo branchInventoryRepository;

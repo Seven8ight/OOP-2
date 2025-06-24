@@ -14,7 +14,7 @@ import java.util.*;
 public class PaymentController {
 
     @Autowired
-    private OrderRepo orderRepository;
+    private orderRepo orderRepository;
 
     @Autowired
     private UserRepo userRepository;
