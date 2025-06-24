@@ -79,6 +79,16 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @GetMapping("/{orderId}/items")
+    public ResponseEntity<?> getOrderItems(@PathVariable UUID orderId) {
+        Optional<Order> orderOpt = orderRepository.findById(orderId);
+        if (orderOpt.isEmpty()) {
+            return ResponseEntity.status(404).body("Order not found.");
+        }
+
+        Order order = orderOpt.get();
+        return ResponseEntity.ok(order.getItems());
+    }
 
     @GetMapping
     public List<Order> getAllOrders() {
