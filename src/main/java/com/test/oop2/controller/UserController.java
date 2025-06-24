@@ -22,6 +22,7 @@ public class UserController {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.status(404).body("Email already exists");
         }
+        System.out.println(user);
 
         // Default role can be CUSTOMER
         user.setRole(Role.CUSTOMER);
