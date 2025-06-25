@@ -34,8 +34,8 @@ public class OrderItemsController {
         return orderItemRepository.findByProductId(productId);
     }
 
-    @GetMapping("/branch/{branchid}")
-    public List<OrderItem> getItemsByBranchId(@PathVariable UUID branchId) {
+    @GetMapping("/branch/{branchId}")
+    public List<OrderItem> getItemsByBranchId(@PathVariable("branchId") UUID branchId) {
         return orderItemRepository.findByBranchId(branchId);
     }
 
