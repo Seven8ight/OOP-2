@@ -75,13 +75,14 @@ public class UserController {
         User user = userOptional.get();
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
+
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             user.setPassword(updatedUser.getPassword());
         }
         if (updatedUser.getBalance() != null) {
             user.setBalance(updatedUser.getBalance());
         }
-
+        userRepository.save(user);
         user.setPassword(null); // Very important
         return ResponseEntity.ok(user);
     }
