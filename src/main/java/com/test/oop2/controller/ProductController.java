@@ -48,7 +48,10 @@ public class ProductController {
         }).orElse("Product not found.");
     }
 
-
+    @GetMapping("/branch/{branchId}")
+    public List<Product> getProductsByBranch(@PathVariable UUID branchId) {
+        return productRepository.findByBranchId(branchId);
+    }
     // Delete
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable UUID id) {
