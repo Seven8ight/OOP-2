@@ -67,4 +67,21 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{id}") // Maps to /api/users/email/{email}
+    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+        // Use Optional to handle the case where the user might not be found
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            // IMPORTANT: Nullify the password before returning the user object
+            // This prevents sensitive data from being exposed via the API.
+            user.setPassword(null);
+            return ResponseEntity.ok(user); // Return 200 OK with the user object
+        } else {
+            // If user is not found, return 404 Not Found
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
