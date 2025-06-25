@@ -15,14 +15,16 @@ public class Product {
     private String description;
     private int quantity;
     private double price;
+    private UUID branchId;
 
     public Product() {}
 
-    public Product(String name, String description, int quantity, double price) {
+    public Product(String name, String description, int quantity, double price, UUID branchId) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
+        this.branchId = branchId;
     }
 
     // Getters and Setters
@@ -40,4 +42,7 @@ public class Product {
 
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
+
+    public UUID getBranchId() { return branchId; }
+    public void setBranchId(UUID branchId) { this.branchId = branchId; }
 }
