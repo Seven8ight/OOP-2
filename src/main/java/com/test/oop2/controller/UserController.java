@@ -86,7 +86,6 @@ public class UserController {
         return ResponseEntity.ok("User updated");
     }
 
-
     @GetMapping("/{id}") // Maps to /api/users/email/{email}
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         // Use Optional to handle the case where the user might not be found
