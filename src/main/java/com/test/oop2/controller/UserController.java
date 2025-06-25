@@ -82,8 +82,8 @@ public class UserController {
             user.setBalance(updatedUser.getBalance());
         }
 
-        userRepository.save(user);
-        return ResponseEntity.ok("User updated");
+        user.setPassword(null); // Very important
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}") // Maps to /api/users/email/{email}
