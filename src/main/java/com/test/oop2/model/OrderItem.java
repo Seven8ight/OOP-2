@@ -15,6 +15,7 @@ public class OrderItem {
 
     private UUID productId;
     private UUID branchId;
+    private UUID userId;
     private int quantity;
     private double price;
 
@@ -41,6 +42,9 @@ public class OrderItem {
 
     public UUID getBranchId() { return branchId; }
     public void setBranchId(UUID branchId) { this.branchId = branchId; }
+
+    public UUID getUserId() { return userId; }
+    public void setUserId(UUID userId) { this.userId = userId; }
 
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
