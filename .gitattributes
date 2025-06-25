@@ -1,0 +1,14 @@
+/mvnw text eol=lf
+*.cmd text eol=lf
+
+# Set default behavior for all text files across platforms.
+# This means Git will try to automatically detect if a file is text or binary.
+# If it's text, it will convert line endings based on the platform's standard
+# during checkout (CRLF on Windows, LF on macOS/Linux) and convert to LF on commit.
+* text=auto
+
+# Explicitly define handling for .cmd files.
+# This ensures that .cmd files (Windows batch scripts) are treated as text,
+# and their canonical form in the repository is LF (Line Feed).
+# When checked out on a Windows system, Git will convert them to CRLF.
+# On macOS, they will remain LF, which is consistent with the system.
