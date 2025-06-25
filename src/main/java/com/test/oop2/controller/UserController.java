@@ -67,6 +67,26 @@ public class UserController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody User updatedUser) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isEmpty()) return ResponseEntity.notFound().build();
+
+        User user = userOptional.get();
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            user.setPassword(updatedUser.getPassword());
+        }
+        if (updatedUser.getBalance() != null) {
+            user.setBalance(updatedUser.getBalance());
+        }
+
+        userRepository.save(user);
+        return ResponseEntity.ok("User updated");
+    }
+
+
     @GetMapping("/{id}") // Maps to /api/users/email/{email}
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         // Use Optional to handle the case where the user might not be found
